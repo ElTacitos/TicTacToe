@@ -21,7 +21,9 @@ export default {
         [{symbol: '_', checked: false},{symbol: '_', checked: false},{symbol: '_', checked: false}],
         [{symbol: '_', checked: false},{symbol: '_', checked: false},{symbol: '_', checked: false}],
       ],
+      placed: 0,
       gameEnded: false,
+      winner: "",
     }
   },
   methods:{
@@ -29,6 +31,7 @@ export default {
       if (!this.gameEnded && !cell.checked) {
         cell.symbol = this.curSymbol;
         cell.checked = true;
+        this.placed++;
         if (this.curSymbol == "X")
           this.curSymbol = "O";
         else
@@ -41,20 +44,26 @@ export default {
         if ((this.board[i][0].symbol != "_") && (this.board[i][0].symbol == this.board[i][1].symbol)
             && (this.board[i][1].symbol == this.board[i][2].symbol)) {
           this.gameEnded = true;
+          this.winner = this.board[i][0].symbol;
         }
         if ((this.board[0][i].symbol != "_") && (this.board[0][i].symbol == this.board[1][i].symbol)
             && (this.board[1][i].symbol == this.board[2][i].symbol)) {
           this.gameEnded = true;
+          this.winner = this.board[i][0].symbol;
         }
       }
       if ((this.board[1][1].symbol != "_") && (this.board[0][0].symbol == this.board[1][1].symbol)
           && (this.board[1][1].symbol == this.board[2][2].symbol)) {
         this.gameEnded = true;
+        this.winner = this.board[1][1].symbol;
       }
       if ((this.board[1][1].symbol != "_") && (this.board[0][2].symbol == this.board[1][1].symbol)
           && (this.board[1][1].symbol == this.board[2][0].symbol)) {
         this.gameEnded = true;
+        this.winner = this.board[1][1].symbol;
       }
+      if (this.placed == 9)
+        this.gameEnded = true;
     }
   }
 }
