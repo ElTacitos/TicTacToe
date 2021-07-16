@@ -1,8 +1,9 @@
 <template>
   <div class="board">
     <div class="line" v-for="line in board" :key="line">
-      <div class="cell" v-for="cell in line" :key="cell">
-        <p v-on:click="check(cell)">{{cell.symbol}}</p>
+      <div class="row" v-for="cell in line" :key="cell" v-on:click="cross(cell)"
+            :class="{ notCheck: !cell.checked && !gameEnded}">
+        <p class="cell">{{cell.symbol}}</p>
       </div>
     </div>
   </div>
@@ -13,21 +14,33 @@ export default {
   name: "Board",
   props: {
     curSymbol: String,
+    needToReset: Boolean,
+  },
+  watch:{
+    //Use needToReset to know when to reset
+    needToReset: function (){
+      this.board = [[{symbol: ' ', checked: false},{symbol: ' ', checked: false},{symbol: ' ', checked: false}],
+        [{symbol: ' ', checked: false},{symbol: ' ', checked: false},{symbol: ' ', checked: false}],
+        [{symbol: ' ', checked: false},{symbol: ' ', checked: false},{symbol: ' ', checked: false}]];
+      this.placed = 0;
+      this.gameEnded = false;
+      this.$emit('resetDone');
+    }
   },
   data() {
     return {
       board: [
-        [{symbol: '_', checked: false},{symbol: '_', checked: false},{symbol: '_', checked: false}],
-        [{symbol: '_', checked: false},{symbol: '_', checked: false},{symbol: '_', checked: false}],
-        [{symbol: '_', checked: false},{symbol: '_', checked: false},{symbol: '_', checked: false}],
+        [{symbol: ' ', checked: false},{symbol: ' ', checked: false},{symbol: ' ', checked: false}],
+        [{symbol: ' ', checked: false},{symbol: ' ', checked: false},{symbol: ' ', checked: false}],
+        [{symbol: ' ', checked: false},{symbol: ' ', checked: false},{symbol: ' ', checked: false}],
       ],
       placed: 0,
       gameEnded: false,
-      winner: "",
     }
   },
   methods:{
-    check: function (cell){
+    //Cross of a cell  in the board
+    cross: function (cell){
       if (!this.gameEnded && !cell.checked) {
         cell.symbol = this.curSymbol;
         cell.checked = true;
@@ -39,32 +52,35 @@ export default {
         this.checkWin();
       }
     },
+    //Check if any player won or if the board is full
     checkWin: function (){
       for (let i = 0; i < 3; ++ i) {
-        if ((this.board[i][0].symbol != "_") && (this.board[i][0].symbol == this.board[i][1].symbol)
+        if ((this.board[i][0].symbol != " ") && (this.board[i][0].symbol == this.board[i][1].symbol)
             && (this.board[i][1].symbol == this.board[i][2].symbol)) {
           this.gameEnded = true;
-          this.winner = this.board[i][0].symbol;
+          this.$emit('endGame',this.board[i][0].symbol);
         }
-        if ((this.board[0][i].symbol != "_") && (this.board[0][i].symbol == this.board[1][i].symbol)
+        if ((this.board[0][i].symbol != " ") && (this.board[0][i].symbol == this.board[1][i].symbol)
             && (this.board[1][i].symbol == this.board[2][i].symbol)) {
           this.gameEnded = true;
-          this.winner = this.board[i][0].symbol;
+          this.$emit('endGame',this.board[0][i].symbol);
         }
       }
-      if ((this.board[1][1].symbol != "_") && (this.board[0][0].symbol == this.board[1][1].symbol)
+      if ((this.board[1][1].symbol != " ") && (this.board[0][0].symbol == this.board[1][1].symbol)
           && (this.board[1][1].symbol == this.board[2][2].symbol)) {
         this.gameEnded = true;
-        this.winner = this.board[1][1].symbol;
+        this.$emit('endGame',this.board[1][1].symbol);
       }
-      if ((this.board[1][1].symbol != "_") && (this.board[0][2].symbol == this.board[1][1].symbol)
+      if ((this.board[1][1].symbol != " ") && (this.board[0][2].symbol == this.board[1][1].symbol)
           && (this.board[1][1].symbol == this.board[2][0].symbol)) {
         this.gameEnded = true;
-        this.winner = this.board[1][1].symbol;
+        this.$emit('endGame',this.board[1][1].symbol);
       }
-      if (this.placed == 9)
+      if (this.placed == 9) {
         this.gameEnded = true;
-    }
+        this.$emit('endGame',' ');
+      }
+    },
   }
 }
 </script>
@@ -72,18 +88,29 @@ export default {
 <style scoped>
 .board{
   border-width: 2px;
-  border-color: red;
+  border-color: #1A2F37;
   border-style: solid;
 }
 .line{
   display: flex;
   flex-direction: row;
 }
-.cell{
+.row{
   border-width: 2px;
-  border-color: green;
+  border-color: #1A2F37;
   border-style: solid;
   display: flex;
   flex-direction: column;
+  width: 10em;
+  height: 10em;
+  justify-content: center;
 }
+.cell{
+  font-size: 5em;
+  color: #E76F51;
+}
+.notCheck:hover{
+  background-color: #30596a;
+}
+
 </style>
