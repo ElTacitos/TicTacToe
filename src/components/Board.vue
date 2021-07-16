@@ -1,7 +1,7 @@
 <template>
   <div class="board">
-    <div class="line" v-for="line in board" :key="line">
-      <div class="row" v-for="cell in line" :key="cell" v-on:click="cross(cell)"
+    <div class="line" v-for="line in board" :key="line.id">
+      <div class="row" v-for="cell in line" :key="cell.id" v-on:click="cross(cell)"
             :class="{ notCheck: !cell.checked && !gameEnded}">
         <p class="cell">{{cell.symbol}}</p>
       </div>
@@ -13,7 +13,6 @@
 export default {
   name: "Board",
   props: {
-    curSymbol: String,
     needToReset: Boolean,
   },
   watch:{
@@ -36,6 +35,7 @@ export default {
       ],
       placed: 0,
       gameEnded: false,
+      curSymbol: "X",
     }
   },
   methods:{

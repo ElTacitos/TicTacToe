@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="top">
-      <Board :cur-symbol="curSymbol" v-on:endGame="endGame" :needToReset="reset"
+      <Board v-on:endGame="endGame" :needToReset="reset"
             v-on:resetDone="resetDone"/>
       <SideInfos :win-msg="this.winMsg" :game-ended="this.gameEnded"
                :s-p1="this.sP1" :s-p2="this.sP2"></SideInfos>
@@ -24,7 +24,6 @@ export default {
   },
   data(){
     return{
-      curSymbol: "X",
       winMsg: '',
       gameEnded: false,
       sP1: 0,
