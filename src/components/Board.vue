@@ -59,26 +59,31 @@ export default {
             && (this.board[i][1].symbol == this.board[i][2].symbol)) {
           this.gameEnded = true;
           this.$emit('endGame',this.board[i][0].symbol);
+          return;
         }
         if ((this.board[0][i].symbol != " ") && (this.board[0][i].symbol == this.board[1][i].symbol)
             && (this.board[1][i].symbol == this.board[2][i].symbol)) {
           this.gameEnded = true;
           this.$emit('endGame',this.board[0][i].symbol);
+          return;
         }
       }
       if ((this.board[1][1].symbol != " ") && (this.board[0][0].symbol == this.board[1][1].symbol)
           && (this.board[1][1].symbol == this.board[2][2].symbol)) {
         this.gameEnded = true;
         this.$emit('endGame',this.board[1][1].symbol);
+        return;
       }
       if ((this.board[1][1].symbol != " ") && (this.board[0][2].symbol == this.board[1][1].symbol)
           && (this.board[1][1].symbol == this.board[2][0].symbol)) {
         this.gameEnded = true;
         this.$emit('endGame',this.board[1][1].symbol);
+        return;
       }
       if (this.placed == 9) {
         this.gameEnded = true;
         this.$emit('endGame',' ');
+        return;
       }
     },
   }
