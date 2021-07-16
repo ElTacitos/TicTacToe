@@ -43,7 +43,7 @@ export default {
           this.sP1++;
           break;
         case 'O':
-          this.winMsg = "Y Won";
+          this.winMsg = "O Won";
           this.sP2++;
           break;
         default:
