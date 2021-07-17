@@ -110,12 +110,25 @@ export default {
   height: 10em;
   justify-content: center;
 }
+
 .cell{
   font-size: 5em;
   color: #E76F51;
 }
 .notCheck:hover{
   background-color: #30596a;
+}
+@media only screen and (max-width: 600px) {
+  .row{
+    border-width: 2px;
+    border-color: #1A2F37;
+    border-style: solid;
+    display: flex;
+    flex-direction: column;
+    width: 7em;
+    height: 7em;
+    justify-content: center;
+  }
 }
 
 </style>

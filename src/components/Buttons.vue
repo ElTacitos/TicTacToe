@@ -32,4 +32,12 @@ button{
 button:active{
   background-color: #0c161a;
 }
+
+@media only screen and (max-width: 400px) {
+  button{
+    margin: 0.5em;
+    font-size: 2em;
+  }
+}
+
 </style>

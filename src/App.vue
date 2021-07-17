@@ -88,4 +88,9 @@ body{
   justify-content: space-around;
   flex-wrap: wrap;
 }
+@media only screen and (max-width: 600px) {
+  #app{
+    margin-top: 15px;
+  }
+}
 </style>
