@@ -2,8 +2,8 @@
   <div class="board">
     <div class="line" v-for="line in board" :key="line.id">
       <div class="row" v-for="cell in line" :key="cell.id" v-on:click="cross(cell)"
-            :class="{ notCheck: !cell.checked && !gameEnded, winCell: cell.winning}">
-        <p class="cell">{{cell.symbol}}</p>
+            :class="{ notCheck: !cell.checked && !gameEnded}">
+        <p class="cell" :class="{ winCell: cell.winning}">{{cell.symbol}}</p>
       </div>
     </div>
   </div>
@@ -131,13 +131,13 @@ export default {
 
 .cell{
   font-size: 5em;
-  color: #E76F51;
+  color: #d7674b;
 }
 .notCheck:hover{
   background-color: #345E6F;
 }
 .winCell{
-  background-color: #345E6F;
+  color: #ff9478;
 }
 @media only screen and (max-width: 600px) {
   .row{
