@@ -1,155 +1,224 @@
 <template>
-  <div class="board">
-    <div class="line" v-for="line in board" :key="line.id">
-      <div class="row" v-for="cell in line" :key="cell.id" v-on:click="cross(cell)"
-            :class="{ notCheck: !cell.checked && !gameEnded}">
-        <p class="cell" :class="{ winCell: cell.winning}">{{cell.symbol}}</p>
-      </div>
+    <div class="board">
+        <div class="line" v-for="line in board" :key="line.id">
+            <div
+                class="row"
+                v-for="cell in line"
+                :key="cell.id"
+                v-on:click="cross(cell)"
+                :class="{ notCheck: !cell.checked && !gameEnded }"
+            >
+                <p class="cell" :class="{ winCell: cell.winning }">
+                    {{ cell.symbol }}
+                </p>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
-<script>
-export default {
-  name: "Board",
-  props: {
-    needToReset: Boolean,
-  },
-  watch:{
-    //Use needToReset to know when to reset
-    needToReset: function (){
-      this.board = [[{symbol: ' ', checked: false, winning: false},{symbol: ' ', checked: false, winning: false},
-        {symbol: ' ', checked: false, winning: false}],
-        [{symbol: ' ', checked: false, winning: false},{symbol: ' ', checked: false, winning: false},
-          {symbol: ' ', checked: false, winning: false}],
-        [{symbol: ' ', checked: false, winning: false},{symbol: ' ', checked: false, winning: false},
-          {symbol: ' ', checked: false, winning: false}]];
-      this.placed = 0;
-      this.gameEnded = false;
-      this.$emit('resetDone');
-    }
-  },
-  data() {
-    return {
-      board: [
-          [{symbol: ' ', checked: false, winning: false},{symbol: ' ', checked: false, winning: false},
-        {symbol: ' ', checked: false, winning: false}],
-        [{symbol: ' ', checked: false, winning: false},{symbol: ' ', checked: false, winning: false},
-          {symbol: ' ', checked: false, winning: false}],
-        [{symbol: ' ', checked: false, winning: false},{symbol: ' ', checked: false, winning: false},
-          {symbol: ' ', checked: false, winning: false}]
-      ],
-      placed: 0,
-      gameEnded: false,
-      curSymbol: "X",
-    }
-  },
-  methods:{
-    //Cross of a cell  in the board
-    cross: function (cell){
-      if (!this.gameEnded && !cell.checked) {
-        cell.symbol = this.curSymbol;
-        cell.checked = true;
-        this.placed++;
-        if (this.curSymbol == "X")
-          this.curSymbol = "O";
-        else
-          this.curSymbol = "X";
-        this.checkWin();
-      }
-    },
-    //Check if any player won or if the board is full
-    checkWin: function (){
-      for (let i = 0; i < 3; ++ i) {
-        if ((this.board[i][0].symbol != " ") && (this.board[i][0].symbol == this.board[i][1].symbol)
-            && (this.board[i][1].symbol == this.board[i][2].symbol)) {
-          this.gameEnded = true;
-          this.$emit('endGame',this.board[i][0].symbol);
-          this.board[i][0].winning = true;
-          this.board[i][1].winning = true;
-          this.board[i][2].winning = true;
-          return;
+<script lang="ts">
+    import { ICell } from "@/interface";
+    import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+
+    const NUMBER_COLUMNS_LINES = 3;
+    const MAX_PLAY = 9;
+    const SECOND = 2;
+
+    @Component
+    export default class Board extends Vue {
+        @Prop(Boolean) protected needToReset!: boolean;
+
+        protected board: ICell[][] = [
+            [
+                { checked: false, symbol: " ", winning: false },
+                { checked: false, symbol: " ", winning: false },
+                { checked: false, symbol: " ", winning: false },
+            ],
+            [
+                { checked: false, symbol: " ", winning: false },
+                { checked: false, symbol: " ", winning: false },
+                { checked: false, symbol: " ", winning: false },
+            ],
+            [
+                { checked: false, symbol: " ", winning: false },
+                { checked: false, symbol: " ", winning: false },
+                { checked: false, symbol: " ", winning: false },
+            ],
+        ];
+
+        protected curSymbol = "X";
+        protected gameEnded = false;
+        protected placed = 0;
+
+        @Watch("needToReset")
+        protected reset(): void {
+            this.board = [
+                [
+                    { checked: false, symbol: " ", winning: false },
+                    { checked: false, symbol: " ", winning: false },
+                    { checked: false, symbol: " ", winning: false },
+                ],
+                [
+                    { checked: false, symbol: " ", winning: false },
+                    { checked: false, symbol: " ", winning: false },
+                    { checked: false, symbol: " ", winning: false },
+                ],
+                [
+                    { checked: false, symbol: " ", winning: false },
+                    { checked: false, symbol: " ", winning: false },
+                    { checked: false, symbol: " ", winning: false },
+                ],
+            ];
+            this.placed = 0;
+            this.gameEnded = false;
+            this.$emit("resetDone");
         }
-        if ((this.board[0][i].symbol != " ") && (this.board[0][i].symbol == this.board[1][i].symbol)
-            && (this.board[1][i].symbol == this.board[2][i].symbol)) {
-          this.gameEnded = true;
-          this.$emit('endGame',this.board[0][i].symbol);
-          this.board[0][i].winning = true;
-          this.board[1][i].winning = true;
-          this.board[2][i].winning = true;
-          return;
+
+        // Check a specific column for a win
+        protected checkColumn(columnNumber: number): boolean {
+            if (
+                this.board[0][columnNumber].symbol !== " " &&
+                this.board[0][columnNumber].symbol ===
+                    this.board[1][columnNumber].symbol &&
+                this.board[1][columnNumber].symbol ===
+                    this.board[SECOND][columnNumber].symbol
+            ) {
+                this.gameEnded = true;
+                this.$emit("endGame", this.board[0][columnNumber].symbol);
+                this.board[0][columnNumber].winning = true;
+                this.board[1][columnNumber].winning = true;
+                this.board[SECOND][columnNumber].winning = true;
+                return true;
+            }
+            return false;
         }
-      }
-      if ((this.board[1][1].symbol != " ") && (this.board[0][0].symbol == this.board[1][1].symbol)
-          && (this.board[1][1].symbol == this.board[2][2].symbol)) {
-        this.gameEnded = true;
-        this.$emit('endGame',this.board[1][1].symbol);
-        this.board[0][0].winning = true;
-        this.board[1][1].winning = true;
-        this.board[2][2].winning = true;
-        return;
-      }
-      if ((this.board[1][1].symbol != " ") && (this.board[0][2].symbol == this.board[1][1].symbol)
-          && (this.board[1][1].symbol == this.board[2][0].symbol)) {
-        this.gameEnded = true;
-        this.$emit('endGame',this.board[1][1].symbol);
-        this.board[0][2].winning = true;
-        this.board[1][1].winning = true;
-        this.board[2][0].winning = true;
-        return;
-      }
-      if (this.placed == 9) {
-        this.gameEnded = true;
-        this.$emit('endGame',' ');
-        return;
-      }
-    },
-  }
-}
+
+        // Check a specific line for a win
+        protected checkLine(lineNumber: number): boolean {
+            if (
+                this.board[lineNumber][0].symbol !== " " &&
+                this.board[lineNumber][0].symbol ===
+                    this.board[lineNumber][1].symbol &&
+                this.board[lineNumber][1].symbol ===
+                    this.board[lineNumber][SECOND].symbol
+            ) {
+                this.gameEnded = true;
+                this.$emit("endGame", this.board[lineNumber][0].symbol);
+                this.board[lineNumber][0].winning = true;
+                this.board[lineNumber][1].winning = true;
+                this.board[lineNumber][SECOND].winning = true;
+                return true;
+            }
+            return false;
+        }
+
+        // Check the left top conner to bottom right conner diagonal for a win
+        // eslint-disable-next-line @typescript-eslint/member-ordering
+        protected checkLRDiagonal(): boolean {
+            if (
+                this.board[1][1].symbol !== " " &&
+                this.board[0][0].symbol === this.board[1][1].symbol &&
+                this.board[1][1].symbol === this.board[SECOND][SECOND].symbol
+            ) {
+                this.gameEnded = true;
+                this.$emit("endGame", this.board[1][1].symbol);
+                this.board[0][0].winning = true;
+                this.board[1][1].winning = true;
+                this.board[SECOND][SECOND].winning = true;
+                return true;
+            }
+            return false;
+        }
+
+        // Check the right top conner to bottom left conner diagonal for a win
+        // eslint-disable-next-line @typescript-eslint/member-ordering
+        protected checkRLDiagonal(): boolean {
+            if (
+                this.board[1][1].symbol !== " " &&
+                this.board[0][SECOND].symbol === this.board[1][1].symbol &&
+                this.board[1][1].symbol === this.board[SECOND][0].symbol
+            ) {
+                this.gameEnded = true;
+                this.$emit("endGame", this.board[1][1].symbol);
+                this.board[0][SECOND].winning = true;
+                this.board[1][1].winning = true;
+                this.board[SECOND][0].winning = true;
+                return true;
+            }
+            return false;
+        }
+
+        // Scan the board to see if a player won or if the game is over
+        protected checkWin(): void {
+            for (let i = 0; i < NUMBER_COLUMNS_LINES; i += 1) {
+                if (this.checkLine(i)) return;
+                if (this.checkColumn(i)) return;
+            }
+            if (this.checkLRDiagonal()) return;
+            if (this.checkRLDiagonal()) return;
+            if (this.placed === MAX_PLAY) {
+                this.gameEnded = true;
+                this.$emit("endGame", " ");
+            }
+        }
+
+        // Cross off a cell in the board
+        protected cross(cell: ICell): void {
+            if (!this.gameEnded && !cell.checked) {
+                cell.symbol = this.curSymbol;
+                cell.checked = true;
+                this.placed += 1;
+                if (this.curSymbol === "X") this.curSymbol = "O";
+                else this.curSymbol = "X";
+                this.checkWin();
+            }
+        }
+    }
 </script>
 
 <style scoped>
-.board{
-  border-width: 2px;
-  border-color: #1A2F37;
-  border-style: solid;
-}
-.line{
-  display: flex;
-  flex-direction: row;
-}
-.row{
-  border-width: 2px;
-  border-color: #1A2F37;
-  border-style: solid;
-  display: flex;
-  flex-direction: column;
-  width: 10em;
-  height: 10em;
-  justify-content: center;
-}
+    .board {
+        border-width: 2px;
+        border-color: #1a2f37;
+        border-style: solid;
+    }
+    .line {
+        display: flex;
+        flex-direction: row;
+    }
+    .row {
+        border-width: 2px;
+        border-color: #1a2f37;
+        border-style: solid;
+        display: flex;
+        flex-direction: column;
+        width: 10em;
+        height: 10em;
+        max-height: 10em;
+        justify-content: center;
+    }
 
-.cell{
-  font-size: 5em;
-  color: #d7674b;
-}
-.notCheck:hover{
-  background-color: #345E6F;
-}
-.winCell{
-  color: #ff9478;
-}
-@media only screen and (max-width: 600px) {
-  .row{
-    border-width: 2px;
-    border-color: #23404B;
-    border-style: solid;
-    display: flex;
-    flex-direction: column;
-    width: 7em;
-    height: 7em;
-    justify-content: center;
-  }
-}
-
+    .cell {
+        font-size: 5em;
+        color: #d7674b;
+    }
+    .notCheck:hover {
+        background-color: #345e6f;
+    }
+    .winCell {
+        color: #ff9478;
+    }
+    @media only screen and (max-width: 600px) {
+        .row {
+            border-width: 2px;
+            border-color: #23404b;
+            border-style: solid;
+            display: flex;
+            flex-direction: column;
+            width: 7em;
+            height: 7em;
+            max-height: 7em;
+            justify-content: center;
+        }
+    }
 </style>

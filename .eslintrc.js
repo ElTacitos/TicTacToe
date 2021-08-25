@@ -432,7 +432,7 @@ module.exports = {
             "error",
             {
                 capIsNewExceptionPattern:
-                    "(Prop|Component|Watch|Model|Ref|State|Mutation|Action)",
+                    "(Prop|Component|Watch|Model|Ref|State|Mutation|Action|Emit)",
             },
         ],
         "no-alert": "error",
