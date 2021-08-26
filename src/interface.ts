@@ -4,7 +4,7 @@ export interface ICell {
     winning: boolean;
 }
 
-export interface ICoordiantes {
+export interface ICoordinates {
     column: number;
     line: number;
 }
