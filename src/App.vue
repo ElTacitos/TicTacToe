@@ -98,6 +98,7 @@
         flex-direction: row;
         justify-content: space-around;
         flex-wrap: wrap;
+        align-items: center;
     }
     /*@media only screen and (max-width: 600px) {
         #app {
