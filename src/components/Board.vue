@@ -18,6 +18,7 @@
 
 <script lang="ts">
     import { ICell } from "@/interface";
+    import { State } from "vuex-class";
     import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
     const NUMBER_COLUMNS_LINES = 3;
@@ -26,25 +27,8 @@
 
     @Component
     export default class Board extends Vue {
+        @State protected board!: ICell[][];
         @Prop(Boolean) protected needToReset!: boolean;
-
-        protected board: ICell[][] = [
-            [
-                { checked: false, symbol: " ", winning: false },
-                { checked: false, symbol: " ", winning: false },
-                { checked: false, symbol: " ", winning: false },
-            ],
-            [
-                { checked: false, symbol: " ", winning: false },
-                { checked: false, symbol: " ", winning: false },
-                { checked: false, symbol: " ", winning: false },
-            ],
-            [
-                { checked: false, symbol: " ", winning: false },
-                { checked: false, symbol: " ", winning: false },
-                { checked: false, symbol: " ", winning: false },
-            ],
-        ];
 
         protected curSymbol = "X";
         protected gameEnded = false;
@@ -52,23 +36,7 @@
 
         @Watch("needToReset")
         protected reset(): void {
-            this.board = [
-                [
-                    { checked: false, symbol: " ", winning: false },
-                    { checked: false, symbol: " ", winning: false },
-                    { checked: false, symbol: " ", winning: false },
-                ],
-                [
-                    { checked: false, symbol: " ", winning: false },
-                    { checked: false, symbol: " ", winning: false },
-                    { checked: false, symbol: " ", winning: false },
-                ],
-                [
-                    { checked: false, symbol: " ", winning: false },
-                    { checked: false, symbol: " ", winning: false },
-                    { checked: false, symbol: " ", winning: false },
-                ],
-            ];
+            this.$store.commit("resetBoard");
             this.placed = 0;
             this.gameEnded = false;
             this.$emit("resetDone");
