@@ -50,7 +50,9 @@
             }
             if (this.checkLRDiagonal()) return;
             if (this.checkRLDiagonal()) return;
-            if (this.placed === MAX_PLAY) {
+          console.log("CHECK WIN");
+            if (this.nbPlaced === MAX_PLAY) {
+              console.log("DRAW");
                 this.$store.commit("toggleEndGame");
                 this.$emit("endGame", " ");
             }
@@ -85,6 +87,8 @@
 
         // Check a specific line for a win
         protected checkLine(lineNumber: number): boolean {
+
+          console.log("CHECK line");
             if (
                 this.board[lineNumber][0].symbol !== " " &&
                 this.board[lineNumber][0].symbol ===

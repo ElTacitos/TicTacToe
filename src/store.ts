@@ -26,6 +26,7 @@ export default new Vuex.Store({
         curSymbol: "X",
         gameEnded: false,
         nbPlaced: 0,
+        toggleResetCells: 0,
     },
 
     // eslint-disable-next-line sort-keys
@@ -39,6 +40,7 @@ export default new Vuex.Store({
         },
         replay(state): void {
             state.gameEnded = false;
+            state.nbPlaced = 0;
         },
         resetBoard(state): void {
             state.board = [
@@ -58,6 +60,7 @@ export default new Vuex.Store({
                     { checked: false, symbol: " ", winning: false },
                 ],
             ];
+            state.toggleResetCells += 1;
         },
         toggleEndGame(state): void{
             state.gameEnded = !state.gameEnded;

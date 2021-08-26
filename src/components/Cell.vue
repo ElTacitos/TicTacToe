@@ -13,7 +13,7 @@
 
 <script lang="ts">
     import { State } from "vuex-class";
-    import { Component, Prop, Vue } from "vue-property-decorator";
+    import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
     @Component
     export default class Cell extends Vue {
@@ -22,10 +22,20 @@
         @State protected curSymbol!: string;
         @State protected gameEnded!: boolean;
         @State protected nbPlaced!: number;
+        @State protected toggleResetCells!: boolean;
 
         public checked = false;
-        public symbol = "";
+        public symbol = " ";
         public winning = false;
+
+        @Watch("toggleResetCells")
+        protected resetCell(): void {
+          console.log("RESET");
+            this.checked = false;
+            this.symbol = " ";
+            this.winning = false;
+            this.updateStoreCell();
+        }
 
         // Cross off a cell in the board
         protected crossCell(): void {
@@ -34,16 +44,20 @@
                 this.checked = true;
                 this.$store.commit("increaseNbPlayed");
                 this.$store.commit("changeSymbol");
-                this.$store.commit("updateCell", {
-                    column: this.column,
-                    line: this.line,
-                    newCell: {
-                        checked: this.checked,
-                        symbol: this.symbol,
-                        winning: this.winning,
-                    },
-                });
+                this.updateStoreCell();
             }
+        }
+
+        private updateStoreCell(): void {
+            this.$store.commit("updateCell", {
+                column: this.column,
+                line: this.line,
+                newCell: {
+                    checked: this.checked,
+                    symbol: this.symbol,
+                    winning: this.winning,
+                },
+            });
         }
     }
 </script>

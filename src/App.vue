@@ -57,6 +57,7 @@
                     break;
                 default:
                     this.winMsg = `Who is this ${winner}`;
+                    console.log(winner);
             }
             this.gameEnded = true;
         }
