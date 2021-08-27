@@ -16,8 +16,7 @@
     import { Component, Vue } from "vue-property-decorator";
 
     @Component
-    export default class Buttons extends Vue {
-    }
+    export default class Buttons extends Vue {}
 </script>
 
 <style scoped>

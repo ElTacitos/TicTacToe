@@ -1,19 +1,19 @@
 <template>
     <div class="board">
         <div class="line">
-            <cell v-bind:line="0" v-bind:column="0" />
-            <cell v-bind:line="1" v-bind:column="0" />
-            <cell v-bind:line="2" v-bind:column="0" />
+            <cell v-bind:coords="{ column: 0, line: 0 }" />
+            <cell v-bind:coords="{ column: 0, line: 1 }" />
+            <cell v-bind:coords="{ column: 0, line: 2 }" />
         </div>
         <div class="line">
-            <cell v-bind:line="0" v-bind:column="1" />
-            <cell v-bind:line="1" v-bind:column="1" />
-            <cell v-bind:line="2" v-bind:column="1" />
+            <cell v-bind:coords="{ column: 1, line: 0 }" />
+            <cell v-bind:coords="{ column: 1, line: 1 }" />
+            <cell v-bind:coords="{ column: 1, line: 2 }" />
         </div>
         <div class="line">
-            <cell v-bind:line="0" v-bind:column="2" />
-            <cell v-bind:line="1" v-bind:column="2" />
-            <cell v-bind:line="2" v-bind:column="2" />
+            <cell v-bind:coords="{ column: 2, line: 0 }" />
+            <cell v-bind:coords="{ column: 2, line: 1 }" />
+            <cell v-bind:coords="{ column: 2, line: 2 }" />
         </div>
     </div>
 </template>
@@ -21,8 +21,8 @@
 <script lang="ts">
     import cell from "@/components/Cell.vue";
     import { ICell } from "@/interface";
-    import { State } from "vuex-class";
     import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+    import { Getter, State } from "vuex-class";
 
     const NUMBER_COLUMNS_LINES = 3;
     const MAX_PLAY = 9;
@@ -36,23 +36,24 @@
         @State protected board!: ICell[][];
         @State protected curSymbol!: string;
         @State protected gameEnded!: boolean;
-        @State protected nbPlaced!: number;
+        @Getter("getNbPlaced") protected getNbPlaced!: () => number;
         @Prop(Boolean) protected needToReset!: boolean;
 
-        protected placed = 0;
+        protected get nbPlaced(): number {
+            return this.getNbPlaced();
+        }
 
         // Scan the board to see if a player won or if the game is over
         @Watch("nbPlaced")
         protected checkWin(): void {
+            console.log("CHCEK");
             for (let i = 0; i < NUMBER_COLUMNS_LINES; i += 1) {
                 if (this.checkLine(i)) return;
                 if (this.checkColumn(i)) return;
             }
             if (this.checkLRDiagonal()) return;
             if (this.checkRLDiagonal()) return;
-          console.log("CHECK WIN");
             if (this.nbPlaced === MAX_PLAY) {
-              console.log("DRAW");
                 this.$store.commit("toggleEndGame");
                 this.$emit("endGame", " ");
             }
@@ -62,7 +63,6 @@
         protected reset(): void {
             this.$store.commit("resetBoard");
             this.$store.commit("replay");
-            this.placed = 0;
             this.$emit("resetDone");
         }
 
@@ -87,8 +87,6 @@
 
         // Check a specific line for a win
         protected checkLine(lineNumber: number): boolean {
-
-          console.log("CHECK line");
             if (
                 this.board[lineNumber][0].symbol !== " " &&
                 this.board[lineNumber][0].symbol ===
